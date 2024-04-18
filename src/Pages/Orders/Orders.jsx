@@ -1,22 +1,22 @@
-import React, { useContext, useState, useEffect } from 'react'
-import LayOut from '../../components/LayOut/LayOut'
-import classes from "./Orders.module.css"
-import { db } from '../../Utility/firebase'
-import { DataContext } from '../../components/DataProvider/DataProvider'
-import ProductCard from '../../components/Product/ProductCard'
+import React, { useContext, useState, useEffect } from 'react';
+import LayOut from '../../components/LayOut/LayOut';
+import classes from './Orders.module.css';
+import { db } from '../../Utility/firebase';
+import { DataContext } from '../../components/DataProvider/DataProvider';
+import ProductCard from '../../components/Product/ProductCard';
 
 function Orders() {
-  const [{ user }, dispatch] = useContext(DataContext);
+  const [{ user }] = useContext(DataContext); // Removed dispatch as it's not used
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     if (user) {
-      const unsubscribe = db.collection("users")
+      const unsubscribe = db.collection('users')
         .doc(user.uid)
-        .collection("orders")
-        .orderBy("created", "desc")
+        .collection('orders')
+        .orderBy('created', 'desc')
         .onSnapshot((snapshot) => {
-          console.log(snapshot)
+          console.log(snapshot);
           setOrders(
             snapshot.docs.map((doc) => ({
               id: doc.id,
@@ -36,22 +36,20 @@ function Orders() {
       <section className={classes.container}>
         <div className={classes.orders_container}>
           <h2>Your Orders</h2>
-          {orders?.length === 0 && <div style={{padding: "20px"}}>
+          {orders?.length === 0 && (
+            <div style={{ padding: '20px' }}>
               You don't have orders yet!
-              </div>}
+            </div>
+          )}
 
-          {/***Ordered items */}
+          {/* Ordered items */}
           <div>
             {orders.map((eachOrder) => (
               <div key={eachOrder.id}>
                 <hr />
                 <p>Order ID: {eachOrder.id}</p>
-                {eachOrder.data.basket.map((order) => ( // Fixed map function syntax
-                  <ProductCard
-                    flex={true}
-                    product={order}
-                    key={order.id}
-                  />
+                {eachOrder.data.basket.map((order) => (
+                  <ProductCard flex={true} product={order} key={order.id} />
                 ))}
               </div>
             ))}
